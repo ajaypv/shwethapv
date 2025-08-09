@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rakhi Gift for Shwetha</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      overflow-x: hidden;
+    }
+    .great-vibes {
+      font-family: 'Great Vibes', cursive;
+    }
+    #rakhi3d {
+      width: 100%;
+      height: 300px;
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen text-center p-6">
+
+  <!-- Heading -->
+  <h1 class="great-vibes text-6xl md:text-7xl font-bold text-pink-700 animate__animated animate__fadeInDown">
+    Happy Raksha Bandhan
+  </h1>
+
+  <!-- Sister Name -->
+  <h2 class="mt-4 text-3xl md:text-4xl font-semibold text-yellow-700 animate__animated animate__fadeInUp">
+    For My Lovely Sister <span class="text-pink-600">Shwetha</span>
+  </h2>
+
+  <!-- Thank You -->
+  <h3 class="mt-2 text-2xl md:text-3xl font-semibold text-green-700 animate__animated animate__pulse animate__infinite">
+    Thank You Shwetha ❤️
+  </h3>
+
+  <!-- 3D Rakhi -->
+  <div id="rakhi3d" class="mt-8"></div>
+
+  <!-- Your Rakhi Image -->
+  <div class="mt-8 relative animate__animated animate__zoomIn">
+    <img src="YOUR_IMAGE.jpg" alt="Rakhi" class="rounded-xl shadow-2xl border-8 border-yellow-400 w-80 md:w-96">
+    <div class="absolute inset-0 rounded-xl border-4 border-pink-500 animate-pulse"></div>
+  </div>
+
+  <!-- Date -->
+  <p class="mt-6 text-lg md:text-xl text-gray-800 bg-yellow-100 px-6 py-3 rounded-full shadow-md animate__animated animate__fadeInUp">
+    Tied on <span class="font-bold text-pink-700">Saturday, 9th August 2025 – 7:26 PM</span>
+  </p>
+
+  <!-- Message -->
+  <p class="mt-6 max-w-2xl text-lg text-gray-700 leading-relaxed animate__animated animate__fadeInUp">
+    Dear Shwetha, this Rakhi is a symbol of our unbreakable bond. No matter where life takes us, 
+    I’ll always be there to protect and support you. With love,  
+    <span class="text-pink-700 font-bold">Ajay</span>.
+  </p>
+
+  <!-- Floating Hearts -->
+  <canvas id="heartsCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none"></canvas>
+
+  <script>
+    // GSAP intro animation
+    gsap.from("h1", { duration: 1.5, y: -50, opacity: 0, ease: "bounce" });
+    gsap.from("h2", { duration: 1.5, y: 50, opacity: 0, delay: 0.5, ease: "power2.out" });
+    gsap.from("h3", { duration: 1.5, scale: 0.5, opacity: 0, delay: 1, ease: "elastic.out(1,0.5)" });
+    gsap.from("p", { duration: 1.5, opacity: 0, delay: 1.5, stagger: 0.3 });
+
+    // Hearts animation
+    const canvas = document.getElementById('heartsCanvas');
+    const ctx = canvas.getContext('2d');
+    let hearts = [];
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    function Heart() {
+      this.x = Math.random() * canvas.width;
+      this.y = canvas.height + Math.random() * 100;
+      this.size = Math.random() * 20 + 10;
+      this.speedY = Math.random() * 1 + 0.5;
+      this.color = `rgba(255, 105, 180, ${Math.random()})`;
+    }
+    Heart.prototype.draw = function() {
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.bezierCurveTo(this.x - this.size / 2, this.y - this.size / 2, this.x - this.size, this.y + this.size / 3, this.x, this.y + this.size);
+      ctx.bezierCurveTo(this.x + this.size, this.y + this.size / 3, this.x + this.size / 2, this.y - this.size / 2, this.x, this.y);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    };
+    Heart.prototype.update = function() {
+      this.y -= this.speedY;
+      if (this.y < -this.size) {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + this.size;
+      }
+      this.draw();
+    };
+    function init() {
+      hearts = [];
+      for (let i = 0; i < 50; i++) {
+        hearts.push(new Heart());
+      }
+    }
+    function animateHearts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hearts.forEach(h => h.update());
+      requestAnimationFrame(animateHearts);
+    }
+    init();
+    animateHearts();
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      init();
+    });
+
+    // THREE.js Rakhi Model
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, document.getElementById("rakhi3d").clientWidth / 300, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(document.getElementById("rakhi3d").clientWidth, 300);
+    document.getElementById("rakhi3d").appendChild(renderer.domElement);
+
+    // Rakhi main body
+    const geometry = new THREE.TorusGeometry(1.5, 0.3, 16, 100);
+    const material = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.3 });
+    const torus = new THREE.Mesh(geometry, material);
+    scene.add(torus);
+
+    // Center gem with image texture
+    const loader = new THREE.TextureLoader();
+    const gemTexture = loader.load('YOUR_IMAGE.jpg');
+    const gemGeometry = new THREE.CircleGeometry(0.8, 64);
+    const gemMaterial = new THREE.MeshBasicMaterial({ map: gemTexture });
+    const gem = new THREE.Mesh(gemGeometry, gemMaterial);
+    scene.add(gem);
+
+    // Lighting
+    const light1 = new THREE.PointLight(0xffffff, 1);
+    light1.position.set(5, 5, 5);
+    scene.add(light1);
+    const light2 = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(light2);
+
+    camera.position.z = 5;
+
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      torus.rotation.x += 0.01;
+      torus.rotation.y += 0.01;
+      gem.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate3D();
+  </script>
+</body>
+</html>
